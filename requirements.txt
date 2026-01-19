@@ -1,0 +1,8 @@
+# No external dependencies required
+# TimeFocus uses only Python standard library
+
+# Python 3.8+ required for:
+# - pathlib.Path
+# - typing annotations
+# - subprocess with timeout
+# - datetime.fromisoformat()

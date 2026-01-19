@@ -1,0 +1,60 @@
+================================================================================
+                         TIMESYNC CHEAT SHEET
+================================================================================
+
+QUICK START
+-----------
+# Sync timer:
+python3 timesync.py sync
+
+# Get current time:
+python3 timesync.py get
+
+# Check status:
+python3 timesync.py info
+
+PYTHON API
+----------
+from timesync import get_current_time, is_timer_stale, sync_timer
+
+# Get current time (self-healing):
+now = get_current_time()
+
+# Check if stale:
+if is_timer_stale():
+    sync_timer(triggered_by="AGENT_NAME")
+
+TOP 3 USE CASES
+---------------
+1. Get accurate time for greetings/timestamps
+   Usage: now = get_current_time()
+   When: Every AI message that references time
+
+2. Check timer freshness on session start
+   Usage: if is_timer_stale(): sync_timer()
+   When: Start of new AI session
+
+3. BCH GM button integration
+   Usage: initialize_session_timer("BCH_GM_BUTTON")
+   When: Logan presses GM in BCH
+
+TROUBLESHOOTING
+---------------
+Error: BeaconTime tool not found
+Fix: Check /mnt/d/BEACON_HQ/TOOLS/beacon_time_sync.py exists
+
+Timer shows negative age
+Fix: Auto-synced as stale (timer from future detected)
+
+Corrupted timer file
+Fix: Auto-syncs on next access (self-healing)
+
+LINKS
+-----
+GitHub: https://github.com/DonkRonk17/TimeSync
+Docs: README.md
+Integration: INTEGRATION_PLAN.md
+
+================================================================================
+Questions? Check Synapse or ask Porter/Forge!
+================================================================================
