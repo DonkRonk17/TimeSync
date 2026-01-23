@@ -1,60 +1,285 @@
 ================================================================================
-                         TIMESYNC CHEAT SHEET
+                         TIMESYNC CHEAT SHEET v1.1
+            Universal Time Synchronization for Team Brain
 ================================================================================
 
 QUICK START
 -----------
-# Sync timer:
-python3 timesync.py sync
-
 # Get current time:
-python3 timesync.py get
+python timesync.py get
+
+# Sync timer:
+python timesync.py sync --triggered-by AGENT_NAME
 
 # Check status:
-python3 timesync.py info
-
-PYTHON API
-----------
-from timesync import get_current_time, is_timer_stale, sync_timer
-
-# Get current time (self-healing):
-now = get_current_time()
-
-# Check if stale:
-if is_timer_stale():
-    sync_timer(triggered_by="AGENT_NAME")
-
-TOP 3 USE CASES
----------------
-1. Get accurate time for greetings/timestamps
-   Usage: now = get_current_time()
-   When: Every AI message that references time
-
-2. Check timer freshness on session start
-   Usage: if is_timer_stale(): sync_timer()
-   When: Start of new AI session
-
-3. BCH GM button integration
-   Usage: initialize_session_timer("BCH_GM_BUTTON")
-   When: Logan presses GM in BCH
-
-TROUBLESHOOTING
----------------
-Error: BeaconTime tool not found
-Fix: Check /mnt/d/BEACON_HQ/TOOLS/beacon_time_sync.py exists
-
-Timer shows negative age
-Fix: Auto-synced as stale (timer from future detected)
-
-Corrupted timer file
-Fix: Auto-syncs on next access (self-healing)
-
-LINKS
------
-GitHub: https://github.com/DonkRonk17/TimeSync
-Docs: README.md
-Integration: INTEGRATION_PLAN.md
+python timesync.py info
 
 ================================================================================
-Questions? Check Synapse or ask Porter/Forge!
+CLI COMMANDS
+================================================================================
+
+GET TIME
+--------
+python timesync.py get
+# Output: 2026-01-22T14:30:00.123456
+
+python timesync.py get --json
+# Output: {"time": "2026-01-22T14:30:00.123456"}
+
+SYNC TIMER
+----------
+python timesync.py sync
+# Syncs timer, attributes to "CLI"
+
+python timesync.py sync --triggered-by FORGE
+# Syncs timer, attributes to FORGE
+
+python timesync.py sync --triggered-by ATLAS --json
+# JSON output of sync result
+
+CHECK STATUS
+------------
+python timesync.py info
+# Shows full timer status:
+#   Session Start, Last Verified, Age, Status, etc.
+
+python timesync.py info --json
+# JSON output of timer info
+
+CHECK IF STALE
+--------------
+python timesync.py check
+# Exit code 0 = FRESH, 1 = STALE
+
+python timesync.py check --json
+# Output: {"stale": false}
+
+SHOW TIMER PATH
+---------------
+python timesync.py path
+# Shows: Timer Path, Exists status
+
+RESET TIMER
+-----------
+python timesync.py reset
+# Deletes timer file (forces fresh sync)
+
+VERSION
+-------
+python timesync.py --version
+# Output: TimeSync 1.1.0
+
+================================================================================
+PYTHON API
+================================================================================
+
+IMPORT
+------
+import sys
+sys.path.append("C:/Users/logan/OneDrive/Documents/AutoProjects/TimeSync")
+
+# Import all functions
+from timesync import (
+    get_current_time,       # Returns datetime
+    get_current_time_iso,   # Returns ISO string
+    is_timer_stale,         # Returns bool
+    sync_timer,             # Returns dict
+    get_timer_info,         # Returns dict or None
+    get_timer_path,         # Returns Path
+    reset_timer,            # Returns bool
+    initialize_session_timer # Returns dict
+)
+
+GET CURRENT TIME
+----------------
+# As datetime object:
+now = get_current_time()
+print(now)  # 2026-01-22 14:30:00.123456
+
+# As ISO string:
+timestamp = get_current_time_iso()
+print(timestamp)  # "2026-01-22T14:30:00.123456"
+
+CHECK IF STALE
+--------------
+if is_timer_stale():
+    print("Timer is stale!")
+    sync_timer(triggered_by="AGENT")
+
+SYNC TIMER
+----------
+result = sync_timer(triggered_by="ATLAS")
+print(result['last_verified'])
+print(result['verified_by'])
+
+GET TIMER INFO
+--------------
+info = get_timer_info()
+if info:
+    print(f"Status: {info['status']}")
+    print(f"Age: {info['age_display']}")
+    print(f"Triggered by: {info['verified_by']}")
+else:
+    print("No timer found")
+
+INITIALIZE SESSION
+------------------
+# For BCH GM button or session start:
+timer_data = initialize_session_timer("BCH_GM_BUTTON")
+
+================================================================================
+COMMON PATTERNS
+================================================================================
+
+SESSION START (All Agents)
+--------------------------
+import sys
+sys.path.append("C:/Users/logan/OneDrive/Documents/AutoProjects/TimeSync")
+from timesync import get_current_time, is_timer_stale, sync_timer
+
+# At session start
+if is_timer_stale():
+    sync_timer(triggered_by="AGENT_NAME")
+    print("[OK] Timer synced")
+
+start_time = get_current_time()
+print(f"Session started at {start_time.isoformat()}")
+
+TIMESTAMPED LOGGING
+-------------------
+from timesync import get_current_time_iso
+
+def log(message):
+    timestamp = get_current_time_iso()
+    print(f"[{timestamp}] {message}")
+
+log("Starting task...")
+log("Task complete!")
+
+TASK TIMING
+-----------
+from timesync import get_current_time
+
+start = get_current_time()
+# ... do work ...
+end = get_current_time()
+duration = end - start
+print(f"Task took {duration.total_seconds():.1f} seconds")
+
+WITH SYNAPSELINK
+----------------
+from timesync import get_current_time_iso
+from synapselink import quick_send
+
+timestamp = get_current_time_iso()
+quick_send("TEAM", f"[{timestamp}] Status Update", "Message body")
+
+================================================================================
+PLATFORM PATHS
+================================================================================
+
+WINDOWS
+-------
+sys.path.append("C:/Users/logan/OneDrive/Documents/AutoProjects/TimeSync")
+Timer: D:\BEACON_HQ\MEMORY_CORE_V2\UNIVERSAL_TIMER.json
+
+WSL/LINUX
+---------
+sys.path.append("/mnt/c/Users/logan/OneDrive/Documents/AutoProjects/TimeSync")
+Timer: /mnt/d/BEACON_HQ/MEMORY_CORE_V2/UNIVERSAL_TIMER.json
+
+MACOS
+-----
+sys.path.append("/Users/username/BEACON_HQ/TimeSync")
+Timer: ~/BEACON_HQ/MEMORY_CORE_V2/UNIVERSAL_TIMER.json
+
+================================================================================
+TIMER STATUS VALUES
+================================================================================
+
+Status      Meaning                         Action
+------      -------                         ------
+FRESH       Timer is valid (<24 hours)      Use normally
+STALE       Timer is old (>24 hours)        Auto-syncs on next use
+
+================================================================================
+ERROR HANDLING
+================================================================================
+
+# get_current_time() never fails - falls back to system time
+now = get_current_time()  # Always works
+
+# is_timer_stale() returns True on any error
+if is_timer_stale():  # Safe to call always
+    sync_timer()
+
+# get_timer_info() returns None if no timer or error
+info = get_timer_info()
+if info:  # Always check before using
+    print(info['status'])
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+TIMER IS STALE
+--------------
+Cause: Not synced in 24+ hours
+Fix:   python timesync.py sync --triggered-by MANUAL
+
+WRONG PATH
+----------
+Cause: Platform detection issue
+Fix:   python timesync.py path  # Check detected path
+
+IMPORT ERROR
+------------
+Cause: Path not in sys.path
+Fix:   sys.path.append("C:/Users/.../TimeSync")
+
+CORRUPTED TIMER
+---------------
+Cause: JSON parse error
+Fix:   python timesync.py reset
+       python timesync.py sync
+
+================================================================================
+CONFIGURATION
+================================================================================
+
+Stale Threshold: 24 hours (hardcoded)
+Timer Format: JSON
+Timer Fields:
+  - session_start: ISO timestamp
+  - last_verified: ISO timestamp
+  - verified_by: Who triggered sync
+  - timezone: System timezone
+  - sync_method: BeaconTime or SystemTime
+  - version: TimeSync version
+
+================================================================================
+AGENT QUICK REFERENCE
+================================================================================
+
+Agent     Primary Use              First Command
+-----     -----------              -------------
+Forge     Session coordination     sync --triggered-by FORGE
+Atlas     Build logging            get (for timestamps)
+Clio      WSL time drift fix       sync --triggered-by CLIO
+Nexus     Cross-platform time      path (verify detection)
+Bolt      Free task timing         get (zero cost!)
+
+================================================================================
+LINKS
+================================================================================
+
+GitHub:        https://github.com/DonkRonk17/TimeSync
+Documentation: README.md
+Examples:      EXAMPLES.md
+Integration:   INTEGRATION_PLAN.md
+Quick Starts:  QUICK_START_GUIDES.md
+
+================================================================================
+                    TimeSync v1.1 - Universal Time for AI
+                Questions? Check Synapse or ask Atlas/Forge!
 ================================================================================
