@@ -1,3 +1,5 @@
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/723e0d61-8473-4fcb-836f-b39b7733f94d" />
+
 # ⏰ TimeSync
 
 ![TimeSync](https://img.shields.io/badge/version-1.1.0-blue)
@@ -403,6 +405,9 @@ DALL-E prompts for visual assets are in [branding/BRANDING_PROMPTS.md](branding/
 - Universal/global indicator
 
 ---
+
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/1b50cf6b-57c1-48a5-aa90-15d4ba7fa794" />
+
 
 ## 🤝 Contributing
 
