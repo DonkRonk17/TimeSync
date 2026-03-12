@@ -233,7 +233,7 @@ def sync_timer(triggered_by: str = "AUTO") -> Dict[str, Any]:
     # Create/update timer file
     timer_data = {
         "session_start": accurate_time.isoformat(),
-        "last_verified": accurate_time.isoformat(),
+        "last_verified": datetime.now().isoformat(),
         "verified_by": triggered_by,
         "timezone": _get_timezone_name(),
         "sync_method": sync_method,
